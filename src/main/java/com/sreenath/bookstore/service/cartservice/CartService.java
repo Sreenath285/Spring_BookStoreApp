@@ -18,9 +18,6 @@ public class CartService implements ICartService{
     private CartRepository cartRepository;
 
     @Autowired
-    private UserRegistrationRepository userRegistrationRepository;
-
-    @Autowired
     private IUserRegistrationService iUserRegistrationService;
 
     @Autowired
