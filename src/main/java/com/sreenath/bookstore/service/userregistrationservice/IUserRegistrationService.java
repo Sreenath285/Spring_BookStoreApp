@@ -1,5 +1,6 @@
 package com.sreenath.bookstore.service.userregistrationservice;
 
+import com.sreenath.bookstore.dto.LoginDTO;
 import com.sreenath.bookstore.dto.UserRegistrationDTO;
 import com.sreenath.bookstore.model.UserRegistrationData;
 
@@ -15,4 +16,6 @@ public interface IUserRegistrationService {
     UserRegistrationData updateUserRegistrationData(int userId, UserRegistrationDTO userRegistrationDTO);
 
     UserRegistrationData getUserByEmailId(String email);
+
+    UserRegistrationData userLogin(LoginDTO loginDTO);
 }

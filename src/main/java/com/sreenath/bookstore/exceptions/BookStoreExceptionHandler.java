@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class UserRegistrationExceptionHandler {
+public class BookStoreExceptionHandler {
     private static final String message = "Exception while processing REST request";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -25,8 +25,8 @@ public class UserRegistrationExceptionHandler {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserRegistrationCustomException.class)
-    public ResponseEntity<ResponseDTO> handleUserRegistrationCustomException(UserRegistrationCustomException exception) {
+    @ExceptionHandler(BookStoreCustomException.class)
+    public ResponseEntity<ResponseDTO> handleUserRegistrationCustomException(BookStoreCustomException exception) {
         ResponseDTO responseDTO = new ResponseDTO(message, exception.getMessage());
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.BAD_REQUEST);
     }

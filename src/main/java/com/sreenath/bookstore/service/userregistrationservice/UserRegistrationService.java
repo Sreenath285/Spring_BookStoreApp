@@ -1,7 +1,8 @@
 package com.sreenath.bookstore.service.userregistrationservice;
 
+import com.sreenath.bookstore.dto.LoginDTO;
 import com.sreenath.bookstore.dto.UserRegistrationDTO;
-import com.sreenath.bookstore.exceptions.UserRegistrationCustomException;
+import com.sreenath.bookstore.exceptions.BookStoreCustomException;
 import com.sreenath.bookstore.model.UserRegistrationData;
 import com.sreenath.bookstore.repository.UserRegistrationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +23,18 @@ public class UserRegistrationService implements IUserRegistrationService{
     @Override
     public UserRegistrationData getUserRegistrationDataByUserId(int userId) {
         return userRegistrationRepository.findById(userId)
-                                         .orElseThrow(() -> new UserRegistrationCustomException("User with id "
-                                                                                                + userId +
-                                                                                                " not found"));
+                                         .orElseThrow(() -> new BookStoreCustomException("User with id "
+                                                                                         + userId +
+                                                                                         " not found"));
     }
 
     @Override
     public UserRegistrationData getUserByEmailId(String email) {
-        UserRegistrationData userRegistrationData = userRegistrationRepository.getUserByEmailId(email);
+        UserRegistrationData userRegistrationData = userRegistrationRepository.findUserRegistrationDataByEmail(email);
         if (userRegistrationData != null)
             return userRegistrationData;
         else
-            throw new UserRegistrationCustomException("User with email id " + email + " not found");
+            throw new BookStoreCustomException("User with email id " + email + " not found");
     }
 
     @Override
@@ -47,5 +48,15 @@ public class UserRegistrationService implements IUserRegistrationService{
         UserRegistrationData userRegistrationData = this.getUserRegistrationDataByUserId(userId);
         userRegistrationData.updateUserRegistrationData(userRegistrationDTO);
         return userRegistrationRepository.save(userRegistrationData);
+    }
+
+    @Override
+    public UserRegistrationData userLogin(LoginDTO loginDTO) {
+        UserRegistrationData userLoginData = userRegistrationRepository.findByEmailAndPassword(loginDTO.email,
+                                                                                               loginDTO.password);
+        if (userLoginData != null)
+            return userLoginData;
+        else
+            throw new BookStoreCustomException("User not found");
     }
 }

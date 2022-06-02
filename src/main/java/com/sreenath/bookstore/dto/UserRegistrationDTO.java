@@ -16,12 +16,12 @@ public @ToString class UserRegistrationDTO {
 
     @NotEmpty(message = "Email cannot be empty!")
     @Pattern(regexp = "^[a-zA-Z-9]+([._+-]*[0-9A-Za-z]+)*@[a-zA-Z0-9]+.[a-zA-Z]{2,4}([.][a-z]{2,4})?$",
-            message = "Invalid email")
+             message = "Invalid email")
     public String email;
 
     @NotEmpty(message = "Password cannot be empty!")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]{1})[A-Za-z\\d!@#$%^&*]{8,}$",
-            message = "Invalid password")
+             message = "Invalid password")
     public String password;
 
     @NotEmpty(message = "Address cannot be empty")
