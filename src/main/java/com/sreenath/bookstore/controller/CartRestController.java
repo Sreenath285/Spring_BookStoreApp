@@ -2,6 +2,7 @@ package com.sreenath.bookstore.controller;
 
 import com.sreenath.bookstore.dto.CartDTO;
 import com.sreenath.bookstore.dto.ResponseDTO;
+import com.sreenath.bookstore.model.BookData;
 import com.sreenath.bookstore.model.CartData;
 import com.sreenath.bookstore.service.cartservice.ICartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class CartRestController {
     @GetMapping(value = {"", "/"})
     public ResponseEntity<ResponseDTO> findAllCarts() {
         Iterable<CartData> allCarts = iCartService.findAllCarts();
-        ResponseDTO responseDTO = new ResponseDTO("All Items in Carts", allCarts);
+        ResponseDTO responseDTO = new ResponseDTO("All items in Carts", allCarts);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
@@ -32,7 +33,7 @@ public class CartRestController {
     @PostMapping("/add_cart")
     public ResponseEntity<ResponseDTO> addToCart(@RequestBody CartDTO cartDTO) {
         CartData cartData = iCartService.addToCart(cartDTO);
-        ResponseDTO responseDTO = new ResponseDTO("Product Added To Cart ", cartData);
+        ResponseDTO responseDTO = new ResponseDTO("Product Added To Cart", cartData);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.CREATED);
     }
 
@@ -40,7 +41,7 @@ public class CartRestController {
     public ResponseEntity<ResponseDTO> updateBookQuantity(@PathVariable("cartId") int cartId,
                                                           @RequestParam(value = "quantity") int quantity) {
         CartData cartData = iCartService.updateCartQuantity(cartId, quantity);
-        ResponseDTO responseDTO = new ResponseDTO("Update quantity call success for Id", cartData);
+        ResponseDTO responseDTO = new ResponseDTO("Updated quantity call success for Id", cartData);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 

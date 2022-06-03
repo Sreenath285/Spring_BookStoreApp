@@ -32,6 +32,11 @@ public class BookService implements IBookService{
     }
 
     @Override
+    public List<BookData> getBookByAuthor(String bookAuthor) {
+        return bookRepository.findBookDataByBookAuthor(bookAuthor);
+    }
+
+    @Override
     public List<BookData> sortBookAscendingOrder() {
         return bookRepository.sortBookAscendingOrder();
     }

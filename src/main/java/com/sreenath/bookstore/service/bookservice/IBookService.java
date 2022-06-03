@@ -13,6 +13,8 @@ public interface IBookService {
 
     BookData getBookById(int bookId);
 
+    List<BookData> getBookByAuthor(String bookAuthor);
+
     List<BookData> sortBookAscendingOrder();
 
     List<BookData> sortBookDescendingOrder();
