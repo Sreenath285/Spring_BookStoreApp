@@ -11,7 +11,7 @@ public interface ICartService {
 
     CartData getCartById(int cartId);
 
-    CartData updateCartQuantity(int cartId, int quantity);
+    CartData updateQuantity(int cartId, int quantity);
 
     void deleteCart(int cartId);
 }

@@ -26,10 +26,14 @@ public @Data class CartData {
     @Column(name = "quantity")
     private int quantity;
 
-    public CartData(UserRegistrationData userId, BookData bookId, int quantity) {
+    @Column(name = "total_price")
+    private int totalPrice;
+
+    public CartData(UserRegistrationData userId, BookData bookId, int quantity, int totalPrice) {
         this.userId = userId;
         this.bookId = bookId;
         this.quantity = quantity;
+        this.totalPrice = totalPrice;
     }
 
     public CartData() {

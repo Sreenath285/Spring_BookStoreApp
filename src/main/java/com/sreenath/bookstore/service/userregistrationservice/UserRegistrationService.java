@@ -5,6 +5,7 @@ import com.sreenath.bookstore.dto.UserRegistrationDTO;
 import com.sreenath.bookstore.exceptions.BookStoreCustomException;
 import com.sreenath.bookstore.model.UserRegistrationData;
 import com.sreenath.bookstore.repository.UserRegistrationRepository;
+import com.sreenath.bookstore.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,17 +16,18 @@ public class UserRegistrationService implements IUserRegistrationService{
     @Autowired
     private UserRegistrationRepository userRegistrationRepository;
 
+    @Autowired
+    private TokenUtil tokenUtil;
+
     @Override
     public List<UserRegistrationData> getUserRegistrationData() {
         return userRegistrationRepository.findAll();
     }
 
     @Override
-    public UserRegistrationData getUserRegistrationDataByUserId(int userId) {
-        return userRegistrationRepository.findById(userId)
-                                         .orElseThrow(() -> new BookStoreCustomException("User with id "
-                                                                                         + userId +
-                                                                                         " not found"));
+    public UserRegistrationData getUserRegistrationDataByUserId(int tokenId) {
+        return userRegistrationRepository.findById(tokenId)
+                                         .orElseThrow(() -> new BookStoreCustomException("User not found"));
     }
 
     @Override
@@ -44,8 +46,8 @@ public class UserRegistrationService implements IUserRegistrationService{
     }
 
     @Override
-    public UserRegistrationData updateUserRegistrationData(int userId, UserRegistrationDTO userRegistrationDTO) {
-        UserRegistrationData userRegistrationData = this.getUserRegistrationDataByUserId(userId);
+    public UserRegistrationData updateUserRegistrationData(int tokenId, UserRegistrationDTO userRegistrationDTO) {
+        UserRegistrationData userRegistrationData = this.getUserRegistrationDataByUserId(tokenId);
         userRegistrationData.updateUserRegistrationData(userRegistrationDTO);
         return userRegistrationRepository.save(userRegistrationData);
     }
@@ -58,5 +60,12 @@ public class UserRegistrationService implements IUserRegistrationService{
             return userLoginData;
         else
             throw new BookStoreCustomException("User not found");
+    }
+
+    @Override
+    public UserRegistrationData verifyUser(String token) {
+        UserRegistrationData userRegistrationData = this.getUserRegistrationDataByUserId(tokenUtil.decodeToken(token));
+        userRegistrationData.setVerified(true);
+        return userRegistrationRepository.save(userRegistrationData);
     }
 }

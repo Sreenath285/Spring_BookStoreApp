@@ -21,7 +21,5 @@ public interface IBookService {
 
     BookData updateBookById(int bookId, BookDTO bookDTO);
 
-    BookData updateBookQuantity(int bookId, int bookQuantity);
-
     void deleteBookById(int bookId);
 }

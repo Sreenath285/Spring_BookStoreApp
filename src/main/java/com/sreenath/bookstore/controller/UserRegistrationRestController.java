@@ -3,7 +3,9 @@ package com.sreenath.bookstore.controller;
 import com.sreenath.bookstore.dto.LoginDTO;
 import com.sreenath.bookstore.dto.ResponseDTO;
 import com.sreenath.bookstore.dto.UserRegistrationDTO;
+import com.sreenath.bookstore.model.EmailData;
 import com.sreenath.bookstore.model.UserRegistrationData;
+import com.sreenath.bookstore.service.emailservice.IEmailService;
 import com.sreenath.bookstore.service.userregistrationservice.IUserRegistrationService;
 import com.sreenath.bookstore.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class UserRegistrationRestController {
     @Autowired
     private TokenUtil tokenUtil;
 
+    @Autowired
+    private IEmailService iEmailService;
+
     @GetMapping(value = {"", "/"})
     public ResponseEntity<ResponseDTO> getUserRegistrationData() {
         List<UserRegistrationData> userRegistrationDataList = iUserRegistrationService.getUserRegistrationData();
@@ -30,9 +35,10 @@ public class UserRegistrationRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/get_by_id/{userId}")
-    public ResponseEntity<ResponseDTO> getUserRegistrationDataById(@PathVariable("userId") int userId) {
-        UserRegistrationData userRegistrationData = iUserRegistrationService.getUserRegistrationDataByUserId(userId);
+    @GetMapping("/get_by_id/{token}")
+    public ResponseEntity<ResponseDTO> getUserRegistrationDataById(@PathVariable("token") String token) {
+        int tokenId = tokenUtil.decodeToken(token);
+        UserRegistrationData userRegistrationData = iUserRegistrationService.getUserRegistrationDataByUserId(tokenId);
         ResponseDTO responseDTO = new ResponseDTO("Get Call Success for Id", userRegistrationData);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
@@ -44,10 +50,27 @@ public class UserRegistrationRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    @GetMapping("/verify/{token}")
+    public ResponseEntity<ResponseDTO> verifyUser(@PathVariable("token") String token) {
+        UserRegistrationData userRegistrationData = iUserRegistrationService.verifyUser(token);
+        if (userRegistrationData.isVerified()) {
+            ResponseDTO responseDTO = new ResponseDTO("User has been verified", userRegistrationData, token);
+            return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+        }
+        else {
+            ResponseDTO responseDTO = new ResponseDTO("ERROR : Invalid Token", null, token);
+            return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+        }
+    }
+
     @PostMapping("/create")
     public ResponseEntity<ResponseDTO> createUserRegistrationData(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
         UserRegistrationData userRegistrationData = iUserRegistrationService.createUserRegistrationData(userRegistrationDTO);
         String token = tokenUtil.createToken(userRegistrationData.getUserId());
+        EmailData emailData = new EmailData(userRegistrationData.getEmail(), "Successfully Registered",
+                                      "Hi " + userRegistrationData.getFirstName() + " " +userRegistrationData.getLastName() +
+                                            ", Click on the given below link to verify \n" + iEmailService.getLink(token));
+        iEmailService.sendEmail(emailData);
         ResponseDTO responseDTO = new ResponseDTO("Created User Registration Data", userRegistrationData, token);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
@@ -59,10 +82,11 @@ public class UserRegistrationRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/update/{userId}")
-    public ResponseEntity<ResponseDTO> updateUserRegistrationDate(@PathVariable("userId") int userId,
+    @PutMapping("/update/{token}")
+    public ResponseEntity<ResponseDTO> updateUserRegistrationDate(@PathVariable("token") String token,
                                                                   @Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
-        UserRegistrationData userRegistrationData = iUserRegistrationService.updateUserRegistrationData(userId, userRegistrationDTO);
+        int tokenId = tokenUtil.decodeToken(token);
+        UserRegistrationData userRegistrationData = iUserRegistrationService.updateUserRegistrationData(tokenId, userRegistrationDTO);
         ResponseDTO responseDTO = new ResponseDTO("Updated User Registration Data for Id", userRegistrationData);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }

@@ -2,14 +2,11 @@ package com.sreenath.bookstore.service.orderservice;
 
 import com.sreenath.bookstore.dto.OrderDTO;
 import com.sreenath.bookstore.exceptions.BookStoreCustomException;
-import com.sreenath.bookstore.model.BookData;
 import com.sreenath.bookstore.model.CartData;
 import com.sreenath.bookstore.model.OrderData;
-import com.sreenath.bookstore.model.UserRegistrationData;
 import com.sreenath.bookstore.repository.OrderRepository;
-import com.sreenath.bookstore.service.bookservice.IBookService;
 import com.sreenath.bookstore.service.cartservice.ICartService;
-import com.sreenath.bookstore.service.userregistrationservice.IUserRegistrationService;
+import com.sreenath.bookstore.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,34 +18,65 @@ public class OrderService implements IOrderService{
     private OrderRepository orderRepository;
 
     @Autowired
-    private IUserRegistrationService iUserRegistrationService;
+    private ICartService iCartService;
 
     @Autowired
-    private IBookService iBookService;
+    private TokenUtil tokenUtil;
 
+    /***
+     * Implemented placeOrder method to place orders
+     * @param orderDTO - passing orderDTO param
+     * @return
+     */
     @Override
     public OrderData placeOrder(OrderDTO orderDTO) {
-        UserRegistrationData userRegistrationData = iUserRegistrationService.getUserRegistrationDataByUserId(orderDTO.getUserId());
-        BookData bookData = iBookService.getBookById(orderDTO.getBookId());
-        OrderData orderData = new OrderData(userRegistrationData, bookData, orderDTO);
+        CartData cartData = iCartService.getCartById(orderDTO.getCartId());
+        int totalPrice = cartData.getTotalPrice();
+        OrderData orderData = new OrderData(cartData, orderDTO);
+        orderData.setTotalPrice(totalPrice);
         return orderRepository.save(orderData);
     }
 
+    /***
+     * Implemented getAllOrders method to find all orders
+     * @return
+     */
     @Override
     public List<OrderData> getAllOrders() {
         return orderRepository.findAll();
     }
 
+    /***
+     * Implemented getOrderById method to find order by id
+     * @param orderId - passing orderId param
+     * @return
+     */
     @Override
     public OrderData getOrderById(int orderId) {
         return orderRepository.findById(orderId)
                               .orElseThrow(() -> new BookStoreCustomException("Order with id " + orderId + " not found"));
     }
 
+    /***
+     * Implemented cancelOrder method to cancel an order
+     * @param orderId - passing orderId param
+     * @return
+     */
     @Override
     public OrderData cancelOrder(int orderId) {
         OrderData orderData = this.getOrderById(orderId);
         orderData.setCancel(true);
+        return orderRepository.save(orderData);
+    }
+
+    /***
+     * Implemented verifyOrder method to get the details of order
+     * @param token - passing token param
+     * @return
+     */
+    @Override
+    public OrderData verifyOrder(String token) {
+        OrderData orderData = this.getOrderById(tokenUtil.decodeToken(token));
         return orderRepository.save(orderData);
     }
 }

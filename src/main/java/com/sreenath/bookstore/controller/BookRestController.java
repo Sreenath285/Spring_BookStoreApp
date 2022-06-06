@@ -4,6 +4,7 @@ import com.sreenath.bookstore.dto.BookDTO;
 import com.sreenath.bookstore.dto.ResponseDTO;
 import com.sreenath.bookstore.model.BookData;
 import com.sreenath.bookstore.service.bookservice.IBookService;
+import com.sreenath.bookstore.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class BookRestController {
     @Autowired
     private IBookService iBookService;
 
+    @Autowired
+    private TokenUtil tokenUtil;
+
     @GetMapping(value = {"", "/"})
     public ResponseEntity<ResponseDTO> getBooksList() {
         List<BookData> bookDataList = iBookService.getBookList();
@@ -24,9 +28,10 @@ public class BookRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/get_by_id/{bookId}")
-    public ResponseEntity<ResponseDTO> getBookById(@PathVariable("bookId") int bookId) {
-        BookData bookData = iBookService.getBookById(bookId);
+    @GetMapping("/get_by_id/{token}")
+    public ResponseEntity<ResponseDTO> getBookById(@PathVariable("token") String token) {
+        int tokenId = tokenUtil.decodeToken(token);
+        BookData bookData = iBookService.getBookById(tokenId);
         ResponseDTO responseDTO = new ResponseDTO("Get Call Success for Id", bookData, null);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
@@ -55,30 +60,25 @@ public class BookRestController {
     @PostMapping("/add_book")
     public ResponseEntity<ResponseDTO> addBook(@RequestBody BookDTO bookDTO) {
         BookData bookData = iBookService.addBook(bookDTO);
-        ResponseDTO responseDTO = new ResponseDTO("Book added successfully", bookData, null);
+        String token = tokenUtil.createToken(bookData.getBookId());
+        ResponseDTO responseDTO = new ResponseDTO("Book added successfully", bookData, token);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/update/{bookId}")
-    public ResponseEntity<ResponseDTO> updateBookById(@PathVariable("bookId") int bookId,
+    @PutMapping("/update/{token}")
+    public ResponseEntity<ResponseDTO> updateBookById(@PathVariable("token") String token,
                                                       @RequestBody BookDTO bookDTO) {
-        BookData bookData = iBookService.updateBookById(bookId, bookDTO);
-        ResponseDTO responseDTO = new ResponseDTO("Updated book for Id " + bookId, bookData);
+        int tokenId = tokenUtil.decodeToken(token);
+        BookData bookData = iBookService.updateBookById(tokenId, bookDTO);
+        ResponseDTO responseDTO = new ResponseDTO("Updated book for Id " + tokenId, bookData);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
-
-    @PutMapping("/update_quantity/{bookId}")
-    public ResponseEntity<ResponseDTO> updateBookQuantity(@PathVariable("bookId") int bookId,
-                                                          @RequestParam(value = "bookQuantity") int bookQuantity) {
-        BookData bookData = iBookService.updateBookQuantity(bookId, bookQuantity);
-        ResponseDTO responseDTO = new ResponseDTO("Updated book quantity for Id " + bookId, bookData);
-        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/delete/{bookId}")
-    public ResponseEntity<ResponseDTO> deleteBookById(@PathVariable("bookId") int bookId) {
-        iBookService.deleteBookById(bookId);
-        ResponseDTO responseDTO = new ResponseDTO("Delete call success for Id", "Deleted Id : " + bookId);
+    
+    @DeleteMapping("/delete/{token}")
+    public ResponseEntity<ResponseDTO> deleteBookById(@PathVariable("token") String token) {
+        int tokenId = tokenUtil.decodeToken(token);
+        iBookService.deleteBookById(tokenId);
+        ResponseDTO responseDTO = new ResponseDTO("Delete call success for Id", "Deleted Id : " + tokenId);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 }

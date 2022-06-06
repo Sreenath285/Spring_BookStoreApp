@@ -19,13 +19,8 @@ public @Data class OrderData {
 
     @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserRegistrationData userId;
-
-    @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id")
-    private BookData bookId;
+    @JoinColumn(name = "cart_id")
+    private CartData cartId;
 
     @Column(name = "address")
     private String address;
@@ -39,16 +34,14 @@ public @Data class OrderData {
     @Column(name = "cancel")
     private boolean cancel;
 
-    public OrderData(UserRegistrationData userId, BookData bookId, OrderDTO orderDTO) {
-        this.userId = userId;
-        this.bookId = bookId;
+    public OrderData(CartData cartId, OrderDTO orderDTO) {
+        this.cartId = cartId;
         orderData(orderDTO);
     }
 
     public void orderData(OrderDTO orderDTO) {
         this.address = orderDTO.address;
-        this.orderDate = orderDTO.orderDate;
-        this.totalPrice = orderDTO.totalPrice;
-        this.cancel = orderDTO.cancel;
+        this.orderDate = getOrderDate();
+        this.totalPrice = getTotalPrice();
     }
 }

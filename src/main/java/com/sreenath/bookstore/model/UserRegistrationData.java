@@ -28,6 +28,9 @@ public @Data class UserRegistrationData {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "verified")
+    private boolean verified;
+
     public UserRegistrationData() {
     }
 

@@ -2,8 +2,11 @@ package com.sreenath.bookstore.controller;
 
 import com.sreenath.bookstore.dto.OrderDTO;
 import com.sreenath.bookstore.dto.ResponseDTO;
+import com.sreenath.bookstore.model.EmailData;
 import com.sreenath.bookstore.model.OrderData;
+import com.sreenath.bookstore.service.emailservice.IEmailService;
 import com.sreenath.bookstore.service.orderservice.IOrderService;
+import com.sreenath.bookstore.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,12 @@ public class OrderRestController {
     @Autowired
     private IOrderService iOrderService;
 
+    @Autowired
+    private IEmailService iEmailService;
+
+    @Autowired
+    private TokenUtil tokenUtil;
+
     @GetMapping(value = {"", "/"})
     public ResponseEntity<ResponseDTO> getAllOrders() {
         List<OrderData> orderDataList = iOrderService.getAllOrders();
@@ -24,24 +33,51 @@ public class OrderRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/get_by_id/{orderId}")
-    public ResponseEntity<ResponseDTO> getOrderById(@PathVariable("orderId") int orderId) {
-        OrderData orderData = iOrderService.getOrderById(orderId);
+    @GetMapping("/get_by_id/{token}")
+    public ResponseEntity<ResponseDTO> getOrderById(@PathVariable("token") String token) {
+        int tokenId = tokenUtil.decodeToken(token);
+        OrderData orderData = iOrderService.getOrderById(tokenId);
         ResponseDTO responseDTO = new ResponseDTO("Get order for id", orderData);
+        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/verify/{token}")
+    public ResponseEntity<ResponseDTO> verifyOrder(@PathVariable("token") String token) {
+        OrderData orderData = iOrderService.verifyOrder(token);
+        ResponseDTO responseDTO = new ResponseDTO("Your order", orderData, token);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
     @PostMapping("/place_order")
     public ResponseEntity<ResponseDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
         OrderData orderData = iOrderService.placeOrder(orderDTO);
-        ResponseDTO responseDTO = new ResponseDTO("Order placed successfully", orderData);
+        String token = tokenUtil.createToken(orderData.getOrderId());
+        EmailData emailData = new EmailData(orderData.getCartId().getUserId().getEmail(),
+                                     "Order confirmed",
+                                      "Hi " + orderData.getCartId().getUserId().getFirstName() +
+                                            " " + orderData.getCartId().getUserId().getLastName() +
+                                            ", Click on the given below link to get details \n" + iEmailService.getOrderLink(token));
+        iEmailService.sendEmail(emailData);
+        ResponseDTO responseDTO = new ResponseDTO("Order placed successfully", orderData, token);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/cancel_order/{orderId}")
-    public ResponseEntity<ResponseDTO> cancelOrder(@PathVariable("orderId") int orderId) {
-        iOrderService.cancelOrder(orderId);
-        ResponseDTO responseDTO = new ResponseDTO("Order canceled successfully", "Order id " + orderId);
+    /***
+     *
+     * @param token
+     * @return
+     */
+    @PutMapping("/cancel_order/{token}")
+    public ResponseEntity<ResponseDTO> cancelOrder(@PathVariable("token") String token) {
+        int tokenId = tokenUtil.decodeToken(token);
+        OrderData orderData = iOrderService.cancelOrder(tokenId);
+        EmailData emailData = new EmailData(orderData.getCartId().getUserId().getEmail(),
+                                     "Cancelled order",
+                                      "Hi " + orderData.getCartId().getUserId().getFirstName() +
+                                            " " + orderData.getCartId().getUserId().getLastName() +
+                                            ", Your order has been cancelled successfully");
+        iEmailService.sendEmail(emailData);
+        ResponseDTO responseDTO = new ResponseDTO("Order cancelled successfully", "Order id " + tokenId);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 }

@@ -27,7 +27,8 @@ public class CartService implements ICartService{
         UserRegistrationData userRegistrationData = iUserRegistrationService.getUserRegistrationDataByUserId(cartDTO.getUserId());
         if (userRegistrationData != null) {
             BookData bookData = iBookService.getBookById(cartDTO.getBookId());
-            CartData cartData = new CartData(userRegistrationData, bookData, cartDTO.quantity);
+            int totalPrice = bookData.getBookPrice() * cartDTO.getQuantity();
+            CartData cartData = new CartData(userRegistrationData, bookData, cartDTO.quantity, totalPrice);
             return cartRepository.save(cartData);
         }
         return null;
@@ -45,7 +46,7 @@ public class CartService implements ICartService{
     }
 
     @Override
-    public CartData updateCartQuantity(int cartId, int quantity) {
+    public CartData updateQuantity(int cartId, int quantity) {
         CartData cartData = this.getCartById(cartId);
         cartData.setQuantity(quantity);
         return cartRepository.save(cartData);

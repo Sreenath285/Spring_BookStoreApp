@@ -9,13 +9,15 @@ import java.util.List;
 public interface IUserRegistrationService {
     List<UserRegistrationData> getUserRegistrationData();
 
-    UserRegistrationData getUserRegistrationDataByUserId(int userId);
+    UserRegistrationData getUserRegistrationDataByUserId(int tokenId);
 
     UserRegistrationData createUserRegistrationData(UserRegistrationDTO userRegistrationDTO);
 
-    UserRegistrationData updateUserRegistrationData(int userId, UserRegistrationDTO userRegistrationDTO);
+    UserRegistrationData updateUserRegistrationData(int tokenId, UserRegistrationDTO userRegistrationDTO);
 
     UserRegistrationData getUserByEmailId(String email);
 
     UserRegistrationData userLogin(LoginDTO loginDTO);
+
+    UserRegistrationData verifyUser(String token);
 }

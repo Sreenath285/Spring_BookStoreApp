@@ -14,4 +14,6 @@ public interface IOrderService {
     OrderData getOrderById(int orderId);
 
     OrderData cancelOrder(int orderId);
+
+    OrderData verifyOrder(String token);
 }
