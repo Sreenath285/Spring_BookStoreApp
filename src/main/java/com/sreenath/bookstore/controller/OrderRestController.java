@@ -26,6 +26,10 @@ public class OrderRestController {
     @Autowired
     private TokenUtil tokenUtil;
 
+    /***
+     * Implemented getAllOrders method to get all the orders from database
+     * @return
+     */
     @GetMapping(value = {"", "/"})
     public ResponseEntity<ResponseDTO> getAllOrders() {
         List<OrderData> orderDataList = iOrderService.getAllOrders();
@@ -33,6 +37,11 @@ public class OrderRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented getOrderById method to get order by id from database
+     * @param token - passing token as param
+     * @return
+     */
     @GetMapping("/get_by_id/{token}")
     public ResponseEntity<ResponseDTO> getOrderById(@PathVariable("token") String token) {
         int tokenId = tokenUtil.decodeToken(token);
@@ -41,6 +50,11 @@ public class OrderRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented verifyOrder method to check the order list
+     * @param token - passing token as param
+     * @return
+     */
     @GetMapping("/verify/{token}")
     public ResponseEntity<ResponseDTO> verifyOrder(@PathVariable("token") String token) {
         OrderData orderData = iOrderService.verifyOrder(token);
@@ -48,6 +62,12 @@ public class OrderRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented placeOrder method to place the order
+     * After placing the order a mail will send to the registered mail id
+     * @param orderDTO - passing orderDTO as param
+     * @return
+     */
     @PostMapping("/place_order")
     public ResponseEntity<ResponseDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
         OrderData orderData = iOrderService.placeOrder(orderDTO);
@@ -63,7 +83,8 @@ public class OrderRestController {
     }
 
     /***
-     *
+     * Implemented cancelOrder method to cancel the order
+     * After cancelling the order a mail will send to the registered mail id
      * @param token
      * @return
      */

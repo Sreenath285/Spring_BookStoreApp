@@ -28,6 +28,10 @@ public class UserRegistrationRestController {
     @Autowired
     private IEmailService iEmailService;
 
+    /***
+     * Implemented getUserRegistrationData method to get all the users from the database
+     * @return
+     */
     @GetMapping(value = {"", "/"})
     public ResponseEntity<ResponseDTO> getUserRegistrationData() {
         List<UserRegistrationData> userRegistrationDataList = iUserRegistrationService.getUserRegistrationData();
@@ -35,6 +39,11 @@ public class UserRegistrationRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented getUserRegistrationDataById method to get user by id from database
+     * @param token - passing token as param
+     * @return
+     */
     @GetMapping("/get_by_id/{token}")
     public ResponseEntity<ResponseDTO> getUserRegistrationDataById(@PathVariable("token") String token) {
         int tokenId = tokenUtil.decodeToken(token);
@@ -43,6 +52,11 @@ public class UserRegistrationRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented getUserByEmailId method to get user by email id from database
+     * @param email - passing email as param
+     * @return
+     */
     @GetMapping("/get_by_email/{email}")
     public ResponseEntity<ResponseDTO> getUserByEmailId(@PathVariable("email") String email) {
         UserRegistrationData userRegistrationData = iUserRegistrationService.getUserByEmailId(email);
@@ -50,6 +64,12 @@ public class UserRegistrationRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented verifyUser method, while registering user a mail with verification link
+     * will send to the registered user email id, by clicking on the link user details is going to display
+     * @param token - passing token as param
+     * @return
+     */
     @GetMapping("/verify/{token}")
     public ResponseEntity<ResponseDTO> verifyUser(@PathVariable("token") String token) {
         UserRegistrationData userRegistrationData = iUserRegistrationService.verifyUser(token);
@@ -63,6 +83,12 @@ public class UserRegistrationRestController {
         }
     }
 
+    /***
+     * Implemented createUserRegistrationData to create user registration
+     * After registering a mail will send to the registered email id
+     * @param userRegistrationDTO - passing userRegistrationDTO as param
+     * @return
+     */
     @PostMapping("/create")
     public ResponseEntity<ResponseDTO> createUserRegistrationData(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
         UserRegistrationData userRegistrationData = iUserRegistrationService.createUserRegistrationData(userRegistrationDTO);
@@ -75,6 +101,11 @@ public class UserRegistrationRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented userLogin method for user login
+     * @param loginDTO - passing loginDTO as param
+     * @return
+     */
     @PostMapping("/user_login")
     public ResponseEntity<ResponseDTO> userLogin(@RequestBody LoginDTO loginDTO) {
         iUserRegistrationService.userLogin(loginDTO);
@@ -82,8 +113,14 @@ public class UserRegistrationRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented updateUserRegistrationData method to update user by id
+     * @param token - passing token as param
+     * @param userRegistrationDTO - passing userRegistrationDTO as param
+     * @return
+     */
     @PutMapping("/update/{token}")
-    public ResponseEntity<ResponseDTO> updateUserRegistrationDate(@PathVariable("token") String token,
+    public ResponseEntity<ResponseDTO> updateUserRegistrationData(@PathVariable("token") String token,
                                                                   @Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
         int tokenId = tokenUtil.decodeToken(token);
         UserRegistrationData userRegistrationData = iUserRegistrationService.updateUserRegistrationData(tokenId, userRegistrationDTO);

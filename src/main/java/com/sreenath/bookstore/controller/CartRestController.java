@@ -19,6 +19,10 @@ public class CartRestController {
     @Autowired
     private TokenUtil tokenUtil;
 
+    /***
+     * Implemented findAllCarts method to get all cart data form database
+     * @return
+     */
     @GetMapping(value = {"", "/"})
     public ResponseEntity<ResponseDTO> findAllCarts() {
         Iterable<CartData> allCarts = iCartService.findAllCarts();
@@ -26,6 +30,11 @@ public class CartRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented getCartById method to get cart by id from database
+     * @param token - passing token as param
+     * @return
+     */
     @GetMapping("/get_by_id/{token}")
     public ResponseEntity<ResponseDTO> getCartById(@PathVariable("token") String token) {
         int tokenId = tokenUtil.decodeToken(token);
@@ -34,6 +43,11 @@ public class CartRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented addToCart method to add cart
+     * @param cartDTO - passing cartDTO as param
+     * @return
+     */
     @PostMapping("/add_cart")
     public ResponseEntity<ResponseDTO> addToCart(@RequestBody CartDTO cartDTO) {
         CartData cartData = iCartService.addToCart(cartDTO);
@@ -42,6 +56,12 @@ public class CartRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.CREATED);
     }
 
+    /***
+     * Implemented updateBookQuantity method to update quantity of the books in the cart
+     * @param token - passing token as param
+     * @param quantity - passing quantity as param
+     * @return
+     */
     @PutMapping("/update_quantity/{token}")
     public ResponseEntity<ResponseDTO> updateBookQuantity(@PathVariable("token") String token,
                                                           @RequestParam(value = "quantity") int quantity) {
@@ -51,6 +71,11 @@ public class CartRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented deleteCart method to delete the cart from database
+     * @param token - passing token as param
+     * @return
+     */
     @DeleteMapping("/delete_cart/{token}")
     public ResponseEntity<ResponseDTO> deleteCart(@PathVariable("token") String token) {
         int tokenId = tokenUtil.decodeToken(token);

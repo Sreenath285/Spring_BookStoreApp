@@ -21,6 +21,10 @@ public class BookRestController {
     @Autowired
     private TokenUtil tokenUtil;
 
+    /***
+     * Implemented getBooksList to get all the books from database
+     * @return
+     */
     @GetMapping(value = {"", "/"})
     public ResponseEntity<ResponseDTO> getBooksList() {
         List<BookData> bookDataList = iBookService.getBookList();
@@ -28,6 +32,11 @@ public class BookRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented getBookById method to get book by id from database
+     * @param token - passing token as param
+     * @return
+     */
     @GetMapping("/get_by_id/{token}")
     public ResponseEntity<ResponseDTO> getBookById(@PathVariable("token") String token) {
         int tokenId = tokenUtil.decodeToken(token);
@@ -36,6 +45,11 @@ public class BookRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented getBookByAuthor method to get book by author name from database
+     * @param bookAuthor - passing bookAuthor as param
+     * @return
+     */
     @GetMapping("/get_by_author/{bookAuthor}")
     public ResponseEntity<ResponseDTO> getBookByAuthor(@PathVariable("bookAuthor") String bookAuthor) {
         List<BookData> bookDataList = iBookService.getBookByAuthor(bookAuthor);
@@ -43,6 +57,11 @@ public class BookRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented sortBookAscendingOrder method to get books in ascending order
+     * from database by book name
+     * @return
+     */
     @GetMapping("/order_ascend")
     public ResponseEntity<ResponseDTO> sortBookAscendingOrder() {
         List<BookData> bookDataList = iBookService.sortBookAscendingOrder();
@@ -50,6 +69,11 @@ public class BookRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented sortBookDescendingOrder method to get books in descending order
+     * from database by book name
+     * @return
+     */
     @GetMapping("/order_descend")
     public ResponseEntity<ResponseDTO> sortBookDescendingOrder() {
         List<BookData> bookDataList = iBookService.sortBookDescendingOrder();
@@ -57,6 +81,11 @@ public class BookRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented addBook method insert book data
+     * @param bookDTO - passing bookDTO as param
+     * @return
+     */
     @PostMapping("/add_book")
     public ResponseEntity<ResponseDTO> addBook(@RequestBody BookDTO bookDTO) {
         BookData bookData = iBookService.addBook(bookDTO);
@@ -65,6 +94,12 @@ public class BookRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    /***
+     * Implemented updateBookById to update book by id
+     * @param token - passing token as param
+     * @param bookDTO - passing bookDTO as param
+     * @return
+     */
     @PutMapping("/update/{token}")
     public ResponseEntity<ResponseDTO> updateBookById(@PathVariable("token") String token,
                                                       @RequestBody BookDTO bookDTO) {
@@ -73,7 +108,12 @@ public class BookRestController {
         ResponseDTO responseDTO = new ResponseDTO("Updated book for Id " + tokenId, bookData);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
-    
+
+    /***
+     * Implemented deleteBookById method to delete book from database by id
+     * @param token - passing token as param
+     * @return
+     */
     @DeleteMapping("/delete/{token}")
     public ResponseEntity<ResponseDTO> deleteBookById(@PathVariable("token") String token) {
         int tokenId = tokenUtil.decodeToken(token);

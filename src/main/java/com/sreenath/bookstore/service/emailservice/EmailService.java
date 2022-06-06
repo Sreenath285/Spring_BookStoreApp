@@ -14,6 +14,12 @@ import java.util.Properties;
 
 @Service
 public class EmailService implements IEmailService{
+
+    /***
+     * Implemented sendEmail method to send mail to the user while creating user and ordering
+     * @param emailData - passing emailData param
+     * @return
+     */
     @Override
     public ResponseEntity<ResponseDTO> sendEmail(EmailData emailData) {
         final String fromEmail = "sreenath.285@gmail.com";
@@ -57,11 +63,21 @@ public class EmailService implements IEmailService{
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /***
+     * Implemented getLink method to pass it in the user verify email
+     * @param token - passing token param
+     * @return
+     */
     @Override
     public String getLink(String token) {
         return "http://localhost:8089/user_registration/verify/" + token;
     }
 
+    /***
+     * Implemented getOrderLink method to pass it in the order email
+     * @param token - passing token param
+     * @return
+     */
     @Override
     public String getOrderLink(String token) {
         return "http://localhost:8089/order/verify/" + token;
