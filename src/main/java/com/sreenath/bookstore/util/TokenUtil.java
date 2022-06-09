@@ -14,11 +14,22 @@ import org.springframework.stereotype.Component;
 public class TokenUtil {
     private static final String TOKEN = "sreenath";
 
+    /***
+     * Implemented createToken method to create token by using JWT
+     * @param id - passing id param
+     * @return
+     */
     public String createToken(int id) {
         Algorithm algorithm = Algorithm.HMAC256(TOKEN);
         return JWT.create().withClaim("id", id).sign(algorithm);
     }
 
+    /***
+     * Implemented decodeToken to decode the created token
+     * @param token - passing token param
+     * @return
+     * @throws SignatureVerificationException
+     */
     public int decodeToken(String token) throws SignatureVerificationException {
         Verification verification = JWT.require(Algorithm.HMAC256(TOKEN));
         JWTVerifier jwtVerifier = verification.build();

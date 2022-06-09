@@ -87,6 +87,20 @@ public class BookService implements IBookService{
     }
 
     /***
+     * Implemented updateBookQuantity to update book quantity
+     * @param bookId - passing bookId param
+     * @param quantity - passing quantity param
+     * @return
+     */
+    @Override
+    public BookData updateBookQuantity(int bookId, int quantity) {
+        BookData bookData = this.getBookById(bookId);
+        int bookQuantity = bookData.getQuantityLeft() + quantity;
+        bookData.setQuantityLeft(bookQuantity);
+        return bookRepository.save(bookData);
+    }
+
+    /***
      * Implemented deleteBookById method to delete book by id
      * @param bookId - passing bookId param
      */

@@ -109,6 +109,15 @@ public class BookRestController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+    @PutMapping("/update_quantity/{token}")
+    public ResponseEntity<ResponseDTO> updateBookQuantity(@PathVariable("token") String token,
+                                                          @RequestParam(value = "quantity") int quantity) {
+        int tokenId = tokenUtil.decodeToken(token);
+        BookData bookData = iBookService.updateBookQuantity(tokenId, quantity);
+        ResponseDTO responseDTO = new ResponseDTO("Updated book quantity for id : " + tokenId, bookData, token);
+        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+    }
+
     /***
      * Implemented deleteBookById method to delete book from database by id
      * @param token - passing token as param
