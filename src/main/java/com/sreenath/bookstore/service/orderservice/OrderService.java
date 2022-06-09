@@ -33,7 +33,7 @@ public class OrderService implements IOrderService{
         CartData cartData = iCartService.getCartById(orderDTO.getCartId());
         int totalPrice = cartData.getTotalPrice();
         OrderData orderData = new OrderData(cartData, orderDTO);
-        orderData.setTotalPrice(totalPrice);
+        orderData.setGrandTotal(totalPrice);
         return orderRepository.save(orderData);
     }
 
@@ -66,6 +66,11 @@ public class OrderService implements IOrderService{
     public OrderData cancelOrder(int orderId) {
         OrderData orderData = this.getOrderById(orderId);
         orderData.setCancel(true);
+        int bookQuantity = orderData.getCartId().getQuantity() + orderData.getCartId().getBookId().getQuantityLeft();
+        orderData.getCartId().getBookId().setQuantityLeft(bookQuantity);
+        orderData.getCartId().setQuantity(0);
+        orderData.getCartId().setTotalPrice(0);
+        orderData.setGrandTotal(0);
         return orderRepository.save(orderData);
     }
 

@@ -28,8 +28,8 @@ public @Data class OrderData {
     @Column(name = "order_date")
     private LocalDate orderDate = LocalDate.now();
 
-    @Column(name = "total_price")
-    private int totalPrice;
+    @Column(name = "grand_total")
+    private int grandTotal;
 
     @Column(name = "cancel")
     private boolean cancel;
@@ -42,6 +42,6 @@ public @Data class OrderData {
     public void orderData(OrderDTO orderDTO) {
         this.address = orderDTO.address;
         this.orderDate = getOrderDate();
-        this.totalPrice = getTotalPrice();
+        this.grandTotal = getGrandTotal();
     }
 }

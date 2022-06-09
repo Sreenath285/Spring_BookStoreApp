@@ -28,6 +28,9 @@ public @Data class BookData {
     @Column(name = "book_price")
     private int bookPrice;
 
+    @Column(name = "quantity_left")
+    private  int quantityLeft;
+
     public BookData() {
     }
 
@@ -41,6 +44,7 @@ public @Data class BookData {
         this.bookDescription = bookDTO.bookDescription;
         this.bookImage = bookDTO.bookImage;
         this.bookPrice = bookDTO.bookPrice;
+        this.quantityLeft = bookDTO.quantity;
     }
 }
 

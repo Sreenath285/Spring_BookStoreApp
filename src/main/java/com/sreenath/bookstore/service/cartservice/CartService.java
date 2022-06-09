@@ -32,9 +32,16 @@ public class CartService implements ICartService{
         UserRegistrationData userRegistrationData = iUserRegistrationService.getUserRegistrationDataByUserId(cartDTO.getUserId());
         if (userRegistrationData != null) {
             BookData bookData = iBookService.getBookById(cartDTO.getBookId());
-            int totalPrice = bookData.getBookPrice() * cartDTO.getQuantity();
-            CartData cartData = new CartData(userRegistrationData, bookData, cartDTO.quantity, totalPrice);
-            return cartRepository.save(cartData);
+            if (cartDTO.quantity <= bookData.getQuantityLeft()) {
+                int totalPrice = bookData.getBookPrice() * cartDTO.getQuantity();
+                CartData cartData = new CartData(userRegistrationData, bookData, cartDTO.quantity, totalPrice);
+                int bookQuantity = bookData.getQuantityLeft() - cartData.getQuantity();
+                bookData.setQuantityLeft(bookQuantity);
+                return cartRepository.save(cartData);
+            }
+            else {
+                throw new BookStoreCustomException("Given quantity is greater than the quantity in the store");
+            }
         }
         return null;
     }

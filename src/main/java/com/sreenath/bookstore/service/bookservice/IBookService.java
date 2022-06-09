@@ -3,7 +3,6 @@ package com.sreenath.bookstore.service.bookservice;
 import com.sreenath.bookstore.dto.BookDTO;
 import com.sreenath.bookstore.model.BookData;
 
-import java.awt.print.Book;
 import java.util.List;
 
 public interface IBookService {
